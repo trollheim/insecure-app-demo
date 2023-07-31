@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block content %}
+ <nav class="navbar navbar-dark bg-primary">
+  <div class="container">
+ <form class="navbar-form navbar-left" role="search">
+  <div class="form-group">
+    <input id="filter" type="text" class="form-control" placeholder="Search">
+  </div>
+
+  <button id="btn_search" type="button" class="btn btn-default" onclick="search()">Search</button>
+</form>
+
+  </div>
+</nav>
+
+
+<div class="container">
+ <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">First</th>
+      <th scope="col">Last</th>
+      <th scope="col">Count</th>
+    </tr>
+  </thead>
+  <tbody id="inner">
+
+
+  </tbody>
+</table>
+  <nav aria-label="Page navigation example">
+  <ul class="pagination justify-content-center">
+    <li class="page-item">
+      <a id="prev" class="page-link" href="#" tabindex="-1">Previous</a>
+    </li>
+    <li   class="page-item"><a id="pagecnt" class="page-link" href="#">1</a></li>
+    <li class="page-item">
+      <a id="next" class="page-link" href="#">Next</a>
+    </li>
+  </ul>
+
+
+
+</nav>
+
+
+</div>
+
+
+<script
+  src="https://code.jquery.com/jquery-3.6.4.min.js"
+  integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+  crossorigin="anonymous"></script>
+<script>
+$("#filter").keypress(function(e) {
+            // Enter pressed?
+            console.log("X "+ e.which)
+            if(e.which == 10 || e.which == 13) {
+              var searchExpr = $("#filter").val()
+                console.log("r ["+searchExpr+"]")
+
+                $("#btn_search").click()
+            }
+        });
+
+
+var page = 0;
+$("#prev").click(function(){
+  if (page<=0){
+      page = 0;
+      return;
+  }
+
+  page--;
+  request()
+});
+
+
+$("#next").click(function(){
+
+  page++
+  request()
+});
+
+var search = function(){
+  request()
+}
+
+
+var request = function() {
+    console.trace();
+  var searchExpr = $("#filter").val()
+    console.log("r ["+searchExpr+"]")
+
+   $.getJSON( "a3/data", {pagenumber : page, search :searchExpr })
+  .done(function( json ) {
+      $( "#inner" ).empty()
+
+          console.log(JSON.stringify(json))
+    for (var i=0;i<json.length;i++){
+        var item = json[i];
+        console.log(JSON.stringify(item))
+        $( "#inner" ).append( " <tr>" );
+        $( "#inner" ).append( " <td>"+item.id+"</td>" );
+        $( "#inner" ).append( " <td>"+item.fname+"</td>" );
+        $( "#inner" ).append( " <td>"+item.sname+"</td>" );
+        $( "#inner" ).append( " <td>"+item.credits+"</td>" );
+        $( "#inner" ).append( "  </tr>" );
+    }
+
+    $( "#pagecnt" ).innerHTML = page
+  })
+  .fail(function( jqxhr, textStatus, error ) {
+           $( "#inner" ).empty()
+    var err = textStatus + ", " + error;
+    console.log( "Request Failed: " + err );
+});
+}
+
+request()
+
+</script>
+<script
+  src="https://code.jquery.com/jquery-3.6.4.min.js"
+  integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+  crossorigin="anonymous"></script>
+
+{% endblock %}
